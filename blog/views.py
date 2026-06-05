@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView, View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib import messages
-from .models import Post, Category, Tag, Comment
+from .models import Post, Category, Tag, Comment, Like
 
 
 def base_context():
@@ -84,6 +84,22 @@ class PostDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(base_context())
+
+        if self.request.user.is_authenticated:
+            context['user_liked'] = self.object.likes.filter(
+                user=self.request.user
+            ).exists()
+        else:
+            context['user_liked'] = False
+
+        context['like_count'] = self.object.likes.count()
+
+        # Add this
+        context['show_updated'] = (
+            self.object.updated_at.date() !=
+            self.object.created_at.date()
+        )
+
         return context
 
 
@@ -221,3 +237,21 @@ class DeleteComment(View):
             comment.delete()
             return redirect('post_detail', slug=post_slug)
         return redirect('posts')
+    
+
+@method_decorator(login_required, name='dispatch')
+class LikePost(View):
+
+    def post(self, request, slug):
+        post = get_object_or_404(Post, slug=slug)
+        like, created = Like.objects.get_or_create(post=post, user=request.user)
+
+        if not created:
+            like.delete()   # already liked → unlike
+
+        # return JSON so the button updates instantly without page reload
+        from django.http import JsonResponse
+        return JsonResponse({
+            'liked': created,
+            'count': post.likes.count(),
+        })
