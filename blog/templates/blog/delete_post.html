@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delete Post — PohanTech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+
+  {% include "blog/header.html" %}
+
+  <main class="site-main">
+    <section class="form-page">
+      <div class="container container--narrow">
+        <div class="danger-card">
+          <div class="danger-card__icon">⚠</div>
+          <h1 class="danger-card__title">Delete this post?</h1>
+          <p class="danger-card__body">
+            You are about to permanently delete
+            <strong>"{{ post.title }}"</strong>
+            and all its comments. This cannot be undone.
+          </p>
+          <form method="post" class="danger-card__form">
+            {% csrf_token %}
+            <div class="form-actions form-actions--center">
+              <a href="{% url 'post_detail' post.slug %}" class="btn btn--ghost">
+                Cancel, keep it
+              </a>
+              <button type="submit" class="btn btn--danger btn--large">
+                Yes, delete forever
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  {% include "blog/footer.html" %}
+
+</body>
+</html>

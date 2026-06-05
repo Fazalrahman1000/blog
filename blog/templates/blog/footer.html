@@ -1,0 +1,36 @@
+{% load static %}
+<footer class="site-footer">
+  <div class="footer-inner">
+
+    <div class="footer-brand">
+      <a href="{% url 'posts' %}" class="site-logo">
+        <img
+          src="{% static 'images/logo.png' %}"
+          alt="PohanTech"
+          class="logo-img logo-img--sm"
+          width="30"
+          height="30"
+        />
+        <span class="logo-text">PohanTech</span>
+      </a>
+      <p class="footer-tagline">Words that leave a mark.</p>
+    </div>
+
+    <div class="footer-links">
+      <a href="{% url 'posts' %}">Home</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'create_post' %}">Write</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="footer-logout-btn">Log out</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Sign in</a>
+      {% endif %}
+    </div>
+
+  </div>
+  <div class="footer-bottom">
+    <p>© {% now "Y" %} PohanTech. Built with Django.</p>
+  </div>
+</footer>

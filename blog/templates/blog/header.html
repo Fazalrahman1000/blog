@@ -1,0 +1,64 @@
+{% load static %}
+<header class="site-header">
+  <div class="header-inner">
+
+    <!-- LOGO -->
+    <a href="{% url 'posts' %}" class="site-logo">
+      <img
+        src="{% static 'images/logo.png' %}"
+        alt="PohanTech"
+        class="logo-img"
+        width="38"
+        height="38"
+      />
+      <span class="logo-text">PohanTech</span>
+    </a>
+
+    <!-- DESKTOP NAV -->
+    <nav class="site-nav">
+      <a href="{% url 'posts' %}"
+         class="{% if request.resolver_match.url_name == 'posts' %}nav-active{% endif %}">
+        Home
+      </a>
+
+      {% for cat in categories %}
+        <a href="{% url 'category_posts' cat.slug %}">{{ cat.name }}</a>
+      {% endfor %}
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'create_post' %}" class="nav-cta">Write</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="nav-link-muted">Log out</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="nav-cta">Sign in</a>
+      {% endif %}
+    </nav>
+
+    <!-- HAMBURGER (mobile) -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="{% url 'posts' %}">Home</a>
+    {% for cat in categories %}
+      <a href="{% url 'category_posts' cat.slug %}">{{ cat.name }}</a>
+    {% endfor %}
+    {% if user.is_authenticated %}
+      <a href="{% url 'create_post' %}">Write a Post</a>
+      <form method="post" action="{% url 'logout' %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="nav-link-muted">Log out</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}">Sign in</a>
+    {% endif %}
+  </div>
+
+</header>

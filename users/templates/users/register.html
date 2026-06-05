@@ -1,0 +1,56 @@
+{# templates/users/register.html #}
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — PohanTech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+  {% include "blog/header.html" %}
+
+  <section class="auth-page">
+    <div class="auth-card">
+      <div class="auth-card__brand">
+        <h1 class="auth-card__title">Join PohanTech.</h1>
+        <p class="auth-card__sub">Create an account to start reading and writing.</p>
+      </div>
+
+      <form method="post" class="auth-form" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+          <input
+            type="{{ field.field.widget.input_type }}"
+            name="{{ field.html_name }}"
+            id="{{ field.id_for_label }}"
+            class="form-control {% if field.errors %}is-invalid{% endif %}"
+            placeholder="{{ field.label }}"
+            {% if field.field.required %}required{% endif %}
+          />
+          {% if field.errors %}
+            <span class="form-error">{{ field.errors|join:", " }}</span>
+          {% endif %}
+          {% if field.help_text %}
+            <span class="form-hint">{{ field.help_text }}</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn--primary btn--full">Create Account</button>
+      </form>
+
+      <p class="auth-card__switch">
+        Already have an account? <a href="{% url 'login' %}">Sign in</a>
+      </p>
+    </div>
+  </section>
+
+  {% include "blog/footer.html" %}
+</body>
+</html>

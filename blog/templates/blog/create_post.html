@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Write a Post — PohanTech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+
+  {% include "blog/header.html" %}
+
+  {% if messages %}
+    <div class="messages-container">
+      {% for message in messages %}
+        <div class="message message-{{ message.tags }}">
+          {{ message }}
+          <button class="message-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="site-main">
+    <section class="form-page">
+      <div class="container container--narrow">
+
+        <div class="form-page__header">
+          <h1 class="form-page__title">Write Something.</h1>
+          <p class="form-page__sub">Your words. Your voice. Make it count.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="post-form" novalidate>
+          {% csrf_token %}
+
+          <!-- TITLE -->
+          <div class="form-group">
+            <label for="id_title" class="form-label">Title</label>
+            <input
+              type="text"
+              name="title"
+              id="id_title"
+              class="form-control form-control--large"
+              placeholder="Give your post a compelling title…"
+              required
+            />
+          </div>
+
+          <!-- SLUG -->
+          <div class="form-group">
+            <label for="id_slug" class="form-label">
+              Slug <span class="form-label__hint">(auto-generated from title)</span>
+            </label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">/post/</span>
+              <input
+                type="text"
+                name="slug"
+                id="id_slug"
+                class="form-control"
+                placeholder="my-post-title"
+              />
+            </div>
+          </div>
+
+          <!-- CATEGORY + IMAGE -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="id_category" class="form-label">Category</label>
+              <select name="category" id="id_category" class="form-control form-select">
+                <option value="">— None —</option>
+                {% for cat in categories %}
+                  <option value="{{ cat.id }}">{{ cat.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="id_featured_img" class="form-label">Featured Image</label>
+              <input
+                type="file"
+                name="featured_img"
+                id="id_featured_img"
+                accept="image/*"
+                class="form-control form-control--file"
+              />
+            </div>
+          </div>
+
+          <!-- TAGS -->
+          <div class="form-group">
+            <label class="form-label">Tags</label>
+            <div class="tag-checkboxes">
+              {% for tag in tags %}
+                <label class="tag-checkbox">
+                  <input type="checkbox" name="tag" value="{{ tag.id }}" />
+                  <span>#{{ tag.tagName }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- CONTENT -->
+          <div class="form-group">
+            <label for="id_content" class="form-label">Content</label>
+            <textarea
+              name="content"
+              id="id_content"
+              rows="20"
+              class="form-control form-control--editor"
+              placeholder="Start writing your story…"
+              required
+            ></textarea>
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="form-actions">
+            <a href="{% url 'posts' %}" class="btn btn--ghost">Cancel</a>
+            <button type="submit" class="btn btn--primary btn--large">Publish Post</button>
+          </div>
+
+        </form>
+      </div>
+    </section>
+  </main>
+
+  {% include "blog/footer.html" %}
+
+  <script src="{% static 'js/main.js' %}"></script>
+  <script>
+    // Auto-generate slug from title
+    const titleInput = document.getElementById('id_title');
+    const slugInput  = document.getElementById('id_slug');
+    let slugEdited   = false;
+
+    slugInput.addEventListener('input', () => { slugEdited = true; });
+
+    titleInput.addEventListener('input', () => {
+      if (slugEdited) return;
+      slugInput.value = titleInput.value
+        .toLowerCase().trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+    });
+  </script>
+</body>
+</html>
