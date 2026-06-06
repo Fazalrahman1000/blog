@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ post.title }} — The Inkwell</title>
+    <title>{{ post.title }} — PohanTech</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -14,10 +14,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
   </head>
   <body>
-    {% include "blog/header.html" %}
-
-    <!-- FLASH MESSAGES -->
-    {% if messages %}
+    {% include "blog/header.html" %} {% if messages %}
     <div class="messages-container">
       {% for message in messages %}
       <div class="message message-{{ message.tags }}">
@@ -32,26 +29,23 @@
 
     <main class="site-main">
       <article class="single-post">
-        <!-- ══ POST HEADER ══════════════════════════════════════════ -->
+        <!-- POST HEADER -->
         <header class="post-header">
           <div class="post-header__inner">
-            <!-- Category badge -->
             {% if post.category %}
             <span class="post-meta__category">{{ post.category.name }}</span>
             {% endif %}
 
-            <!-- Title -->
             <h1 class="post-header__title">{{ post.title }}</h1>
 
-            <!-- Author + date -->
             <div class="post-header__meta">
               <div class="author-chip">
                 <div class="author-chip__avatar">
                   {{ post.author.username|first|upper }}
                 </div>
                 <div class="author-chip__info">
-                  <span class="author-chip__name">
-                    {{ post.author.get_full_name|default:post.author.username }}
+                  <span class="author-chip__name">{{ post.author.get_full_name|default:post.author.username }}
+
                   </span>
                   <time
                     class="author-chip__date"
@@ -71,7 +65,7 @@
           </div>
         </header>
 
-        <!-- ══ FEATURED IMAGE ═══════════════════════════════════════ -->
+        <!-- FEATURED IMAGE -->
         {% if post.featured_img %}
         <div class="post-hero-image">
           <img
@@ -83,7 +77,7 @@
         </div>
         {% endif %}
 
-        <!-- ══ POST CONTENT ═════════════════════════════════════════ -->
+        <!-- POST BODY -->
         <div class="post-body">
           <div class="post-content">{{ post.content|linebreaks }}</div>
 
@@ -96,7 +90,9 @@
             >
             {% endfor %}
           </div>
+          {% endif %}
 
+          <!-- Like button -->
           <div class="like-section">
             {% if user.is_authenticated %}
             <button
@@ -118,18 +114,7 @@
             {% endif %}
           </div>
 
-          {% comment %} {% endwith %}  {% endcomment %}
-          
-          {% else %}
-          <div class="like-section">
-            <span class="like-display">
-              <span class="like-icon">♥</span>
-              {{ post.likes.count }} Like{{ post.likes.count|pluralize }}
-            </span>
-          </div>
-          {% endif %}
-
-          <!-- Edit / Delete (only for author or staff) -->
+          <!-- Edit / Delete -->
           {% if user == post.author or user.is_staff %}
           <div class="post-actions">
             <a href="{% url 'edit_post' post.slug %}" class="btn btn--outline"
@@ -142,18 +127,14 @@
           {% endif %}
         </div>
 
-        <!-- ══ DIVIDER ═══════════════════════════════════════════════ -->
+        <!-- DIVIDER -->
         <div class="section-divider">✦</div>
 
-        <!-- ══ COMMENTS ═════════════════════════════════════════════ -->
+        <!-- COMMENTS -->
         <section class="comments-section" id="comments">
           <div class="comments-inner">
-            <h2 class="comments-title">
-              {{ post.comment_set.count }} Comment{{
-              post.comment_set.count|pluralize }}
-            </h2>
+            <h2 class="comments-title">{{ post.comment_set.count }} Comment{{ post.comment_set.count|pluralize }}</h2>
 
-            <!-- Comment list -->
             {% if post.comment_set.all %}
             <div class="comment-list">
               {% for comment in post.comment_set.all %}
@@ -164,21 +145,16 @@
                       {{ comment.user.username|first|upper }}
                     </div>
                     <div class="author-chip__info">
-                      <span class="author-chip__name">
-                        {{
-                        comment.user.get_full_name|default:comment.user.username
-                        }}
-                      </span>
+                      <span class="author-chip__name">{{ comment.user.get_full_name|default:comment.user.username }}</span>
                       <time
                         class="author-chip__date"
                         datetime="{{ comment.created_at|date:'Y-m-d' }}"
                       >
-                        {{ comment.created_at|date:"M j, Y · g:i A" }}
+                       {{ comment.created_at|date:"M j, Y" }} · {{ comment.created_at|date:"g:i A" }}
+
                       </time>
                     </div>
                   </div>
-
-                  <!-- Delete comment (owner or staff only) -->
                   {% if user == comment.user or user.is_staff %}
                   <a
                     href="{% url 'delete_comment' comment.id %}"
@@ -196,15 +172,11 @@
               </div>
               {% endfor %}
             </div>
-
             {% else %}
             <p class="no-comments">
               No comments yet. Be the first to share your thoughts.
             </p>
-            {% endif %}
-
-            <!-- ── Comment form ─────────────────────────────────── -->
-            {% if user.is_authenticated %}
+            {% endif %} {% if user.is_authenticated %}
             <div class="comment-form-wrapper">
               <h3 class="comment-form__title">Leave a Comment</h3>
               <form
@@ -221,25 +193,23 @@
                   required
                 ></textarea>
                 <div class="comment-form__footer">
-                  <span class="comment-form__user">
-                    Posting as <strong>{{ user.username }}</strong>
-                  </span>
+                  <span class="comment-form__user"
+                    >Posting as <strong>{{ user.username }}</strong></span
+                  >
                   <button type="submit" class="btn btn--primary">
                     Post Comment
                   </button>
                 </div>
               </form>
             </div>
-
             {% else %}
             <div class="comment-login-prompt">
               <p>Want to join the conversation?</p>
               <a
                 href="{% url 'login' %}?next={{ request.path }}"
                 class="btn btn--outline"
+                >Sign in to comment</a
               >
-                Sign in to comment
-              </a>
             </div>
             {% endif %}
           </div>
@@ -251,8 +221,8 @@
 
     <script src="{% static 'js/main.js' %}"></script>
     <script>
-      document.querySelectorAll(".like-btn").forEach((btn) => {
-        btn.addEventListener("click", async () => {
+      document.querySelectorAll(".like-btn").forEach(function (btn) {
+        btn.addEventListener("click", async function () {
           const res = await fetch(btn.dataset.url, {
             method: "POST",
             headers: {

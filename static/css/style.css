@@ -1656,3 +1656,103 @@ em, i { font-family: var(--font-serif); }
   color: var(--ink) !important;
   font-weight: 500 !important;
 }
+
+Add to style and views · TXT
+/* ── ADD TO BOTTOM OF style.css ─────────────────────────────────
+ 
+/* Post card stats row (likes + comments count) */
+.post-card__stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+ 
+.post-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .78rem;
+  font-family: var(--font-mono);
+  color: var(--ink-muted);
+}
+ 
+.post-stat__icon {
+  font-size: .85rem;
+}
+ 
+/* Nav active link */
+.nav-active {
+  color: var(--ink) !important;
+  font-weight: 500 !important;
+}
+ 
+/* Footer logout button */
+.footer-logout-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: .875rem;
+  color: rgba(250, 248, 245, .6);
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--transition);
+}
+ 
+.footer-logout-btn:hover {
+  color: var(--paper);
+}
+ 
+/* Post header updated date */
+.post-header__updated {
+  font-size: .78rem;
+  font-family: var(--font-mono);
+  color: var(--ink-muted);
+  margin-top: .75rem;
+  letter-spacing: .02em;
+}
+ 
+/* Like button */
+.like-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--paper-border);
+  display: flex;
+  align-items: center;
+}
+ 
+.like-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem 1.4rem;
+  border: 1.5px solid var(--paper-border);
+  border-radius: 100px;
+  background: white;
+  font-family: var(--font-sans);
+  font-size: .9rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+ 
+.like-btn:hover {
+  border-color: var(--rust);
+  color: var(--rust);
+}
+ 
+.like-btn.liked {
+  background: var(--rust-light);
+  border-color: var(--rust);
+  color: var(--rust);
+}
+ 
+.like-icon { font-size: 1rem; }
+ 
+.like-display {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .9rem;
+  color: var(--ink-muted);
+}
+ 

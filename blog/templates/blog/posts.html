@@ -14,16 +14,15 @@
 
   {% include "blog/header.html" %}
 
-  <!-- FLASH MESSAGES -->
   {% if messages %}
-    <div class="messages-container">
-      {% for message in messages %}
-        <div class="message message-{{ message.tags }}">
-          {{ message }}
-          <button class="message-close" onclick="this.parentElement.remove()">×</button>
-        </div>
-      {% endfor %}
+  <div class="messages-container">
+    {% for message in messages %}
+    <div class="message message-{{ message.tags }}">
+      {{ message }}
+      <button class="message-close" onclick="this.parentElement.remove()">×</button>
     </div>
+    {% endfor %}
+  </div>
   {% endif %}
 
   <main class="site-main">
@@ -32,9 +31,7 @@
     <section class="hero">
       <div class="hero-inner">
         <p class="hero-eyebrow">Est. {% now "Y" %}</p>
-        <h1 class="hero-headline">
-          Ideas worth<br /><em>reading.</em>
-        </h1>
+        <h1 class="hero-headline">Ideas worth<br /><em>reading.</em></h1>
         <p class="hero-sub">Dispatches on code, culture, and everything in between.</p>
         <div class="hero-divider"></div>
       </div>
@@ -44,15 +41,11 @@
     {% if categories %}
     <section class="tag-bar">
       <div class="container">
-        <a href="{% url 'posts' %}"
-           class="tag-pill {% if not active_category %}active{% endif %}">
-          All
-        </a>
+        <a href="{% url 'posts' %}" class="tag-pill {% if not active_category %}active{% endif %}">All</a>
         {% for cat in categories %}
-          <a href="{% url 'category_posts' cat.slug %}"
-             class="tag-pill {% if active_category == cat.slug %}active{% endif %}">
-            {{ cat.name }}
-          </a>
+        <a href="{% url 'category_posts' cat.slug %}" class="tag-pill {% if active_category == cat.slug %}active{% endif %}">
+          {{ cat.name }}
+        </a>
         {% endfor %}
       </div>
     </section>
@@ -63,10 +56,9 @@
     <section class="tag-bar tag-bar--tags">
       <div class="container">
         {% for tag in tags %}
-          <a href="{% url 'tag_posts' tag.slug %}"
-             class="tag-pill tag-pill--tag {% if active_tag == tag.slug %}active{% endif %}">
-            #{{ tag.tagName }}
-          </a>
+        <a href="{% url 'tag_posts' tag.slug %}" class="tag-pill {% if active_tag == tag.slug %}active{% endif %}">
+          #{{ tag.tagName }}
+        </a>
         {% endfor %}
       </div>
     </section>
@@ -78,125 +70,125 @@
 
         {% if posts %}
 
-          <!-- FEATURED POST (first post, large card) -->
-          {% with posts.0 as featured %}
-          <article class="post-card post-card--featured">
+        <!-- FEATURED POST (first) -->
+        {% with featured=posts.0 %}
+        <article class="post-card post-card--featured">
 
-            <!-- Image -->
-            <a href="{% url 'post_detail' featured.slug %}" class="post-card__image-link {% if not featured.featured_img %}post-card__image-placeholder{% endif %}">
-              {% if featured.featured_img %}
-                <img src="{{ featured.featured_img.url }}" alt="{{ featured.title }}" class="post-card__image" width="600" height="450" />
+          <a href="{% url 'post_detail' featured.slug %}" class="post-card__image-link {% if not featured.featured_img %}post-card__image-placeholder{% endif %}">
+            {% if featured.featured_img %}
+            <img src="{{ featured.featured_img.url }}" alt="{{ featured.title }}" class="post-card__image" width="600" height="450" />
+            {% else %}
+            <span class="placeholder-icon">✦</span>
+            {% endif %}
+          </a>
+
+          <div class="post-card__body">
+            {% if featured.category %}
+            <span class="post-meta__category">{{ featured.category.name }}</span>
+            {% endif %}
+
+            <h2 class="post-card__title">
+              <a href="{% url 'post_detail' featured.slug %}">{{ featured.title }}</a>
+            </h2>
+
+            <p class="post-card__excerpt">{{ featured.content|truncatewords:35 }}</p>
+
+            {% if featured.tag.all %}
+            <div class="post-card__tags">
+              {% for tag in featured.tag.all %}
+              <a href="{% url 'tag_posts' tag.slug %}" class="tag-pill tag-pill--sm">#{{ tag.tagName }}</a>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="post-card__footer">
+              <div class="author-chip author-chip--sm">
+                <div class="author-chip__avatar">{{ featured.author.username|first|upper }}</div>
+                <div class="author-chip__info">
+                  <span class="author-chip__name">{{ featured.author.get_full_name|default:featured.author.username }}</span>
+                  <time class="author-chip__date" datetime="{{ featured.created_at|date:'Y-m-d' }}">
+                    {{ featured.created_at|date:"N j, Y" }}
+                  </time>
+                </div>
+              </div>
+              <div class="post-card__stats">
+                <span class="post-stat"><span class="post-stat__icon">♥</span> {{ featured.likes.count }}</span>
+                <span class="post-stat"><span class="post-stat__icon">💬</span> {{ featured.comment_set.count }}</span>
+                <a href="{% url 'post_detail' featured.slug %}" class="read-more-link">Read →</a>
+              </div>
+            </div>
+          </div>
+
+        </article>
+        {% endwith %}
+
+        <!-- REST OF POSTS (grid) -->
+        {% if posts|length > 1 %}
+        <div class="post-grid">
+          {% for post in posts|slice:"1:" %}
+          <article class="post-card post-card--grid">
+
+            <a href="{% url 'post_detail' post.slug %}" class="post-card__image-link {% if not post.featured_img %}post-card__image-placeholder{% endif %}">
+              {% if post.featured_img %}
+              <img src="{{ post.featured_img.url }}" alt="{{ post.title }}" class="post-card__image" width="400" height="225" />
               {% else %}
-                <span class="placeholder-icon">✦</span>
+              <span class="placeholder-icon">✦</span>
               {% endif %}
             </a>
 
-            <!-- Body -->
             <div class="post-card__body">
-              {% if featured.category %}
-                <span class="post-meta__category">{{ featured.category.name }}</span>
+              {% if post.category %}
+              <span class="post-meta__category">{{ post.category.name }}</span>
               {% endif %}
 
               <h2 class="post-card__title">
-                <a href="{% url 'post_detail' featured.slug %}">{{ featured.title }}</a>
+                <a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
               </h2>
 
-              <p class="post-card__excerpt">{{ featured.content|truncatewords:35 }}</p>
-
-              <!-- Tags -->
-              {% if featured.tag.all %}
-              <div class="post-card__tags">
-                {% for tag in featured.tag.all %}
-                  <a href="{% url 'tag_posts' tag.slug %}" class="tag-pill tag-pill--sm">#{{ tag.tagName }}</a>
-                {% endfor %}
-              </div>
-              {% endif %}
+              <p class="post-card__excerpt">{{ post.content|truncatewords:20 }}</p>
 
               <div class="post-card__footer">
-                <div class="post-meta">
-                  <div class="author-chip author-chip--sm">
-                    <div class="author-chip__avatar">{{ featured.author.username|first|upper }}</div>
-                    <div class="author-chip__info">
-                      <span class="author-chip__name">{{ featured.author.get_full_name|default:featured.author.username }}</span>
-                      <time class="author-chip__date" datetime="{{ featured.created_at|date:'Y-m-d' }}">
-                        {{ featured.created_at|date:"N j, Y" }}
-                      </time>
-                    </div>
+                <div class="author-chip author-chip--sm">
+                  <div class="author-chip__avatar">{{ post.author.username|first|upper }}</div>
+                  <div class="author-chip__info">
+                    <span class="author-chip__name">{{ post.author.get_full_name|default:post.author.username }}</span>
+                    <time class="author-chip__date" datetime="{{ post.created_at|date:'Y-m-d' }}">
+                      {{ post.created_at|date:"M j, Y" }}
+                    </time>
                   </div>
                 </div>
-                <a href="{% url 'post_detail' featured.slug %}" class="read-more-link">Read →</a>
+                <div class="post-card__stats">
+                  <span class="post-stat"><span class="post-stat__icon">♥</span> {{ post.likes.count }}</span>
+                  <span class="post-stat"><span class="post-stat__icon">💬</span> {{ post.comment_set.count }}</span>
+                </div>
               </div>
             </div>
 
           </article>
-          {% endwith %}
-
-          <!-- REST OF POSTS (grid) -->
-          {% if posts|length > 1 %}
-          <div class="post-grid">
-            {% for post in posts|slice:"1:" %}
-            <article class="post-card post-card--grid">
-
-              <a href="{% url 'post_detail' post.slug %}" class="post-card__image-link {% if not post.featured_img %}post-card__image-placeholder{% endif %}">
-                {% if post.featured_img %}
-                  <img src="{{ post.featured_img.url }}" alt="{{ post.title }}" class="post-card__image" width="400" height="225" />
-                {% else %}
-                  <span class="placeholder-icon">✦</span>
-                {% endif %}
-              </a>
-
-              <div class="post-card__body">
-                {% if post.category %}
-                  <span class="post-meta__category">{{ post.category.name }}</span>
-                {% endif %}
-
-                <h2 class="post-card__title">
-                  <a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
-                </h2>
-
-                <p class="post-card__excerpt">{{ post.content|truncatewords:20 }}</p>
-
-                <div class="post-card__footer">
-                  <div class="post-meta">
-                    <div class="author-chip author-chip--sm">
-                      <div class="author-chip__avatar">{{ post.author.username|first|upper }}</div>
-                      <div class="author-chip__info">
-                        <span class="author-chip__name">{{ post.author.get_full_name|default:post.author.username }}</span>
-                        <time class="author-chip__date" datetime="{{ post.created_at|date:'Y-m-d' }}">
-                          {{ post.created_at|date:"M j, Y" }}
-                        </time>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </article>
-            {% endfor %}
-          </div>
-          {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
 
         {% else %}
-          <!-- EMPTY STATE -->
-          <div class="empty-state">
-            <span class="empty-icon">✦</span>
-            <h3>No posts yet.</h3>
-            <p>Be the first to write something worth reading.</p>
-            {% if user.is_authenticated %}
-              <a href="{% url 'create_post' %}" class="btn btn--primary">Write a Post</a>
-            {% endif %}
-          </div>
+        <div class="empty-state">
+          <span class="empty-icon">✦</span>
+          <h3>No posts yet.</h3>
+          <p>Be the first to write something worth reading.</p>
+          {% if user.is_authenticated %}
+          <a href="{% url 'create_post' %}" class="btn btn--primary">Write a Post</a>
+          {% endif %}
+        </div>
         {% endif %}
 
         <!-- PAGINATION -->
         {% if is_paginated %}
         <nav class="pagination" aria-label="Page navigation">
           {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}" class="page-link">← Prev</a>
+          <a href="?page={{ page_obj.previous_page_number }}" class="page-link">← Prev</a>
           {% endif %}
           <span class="page-current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
           {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="page-link">Next →</a>
+          <a href="?page={{ page_obj.next_page_number }}" class="page-link">Next →</a>
           {% endif %}
         </nav>
         {% endif %}

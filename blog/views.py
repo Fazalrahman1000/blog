@@ -3,6 +3,7 @@ from django.views.generic import ListView, DetailView, View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib import messages
+from django.http import JsonResponse
 from .models import Post, Category, Tag, Comment, Like
 
 
@@ -85,21 +86,20 @@ class PostDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context.update(base_context())
 
+        # Like info
         if self.request.user.is_authenticated:
             context['user_liked'] = self.object.likes.filter(
                 user=self.request.user
             ).exists()
         else:
             context['user_liked'] = False
-
         context['like_count'] = self.object.likes.count()
 
-        # Add this
+        # Show "Last updated" only if the post was edited on a different day
         context['show_updated'] = (
-            self.object.updated_at.date() !=
-            self.object.created_at.date()
+            self.object.updated_at.strftime('%Y-%m-%d') !=
+            self.object.created_at.strftime('%Y-%m-%d')
         )
-
         return context
 
 
@@ -111,12 +111,12 @@ class CreatePost(View):
         return render(request, 'blog/create_post.html', base_context())
 
     def post(self, request):
-        title    = request.POST.get('title', '').strip()
-        slug     = request.POST.get('slug', '').strip()
-        content  = request.POST.get('content', '').strip()
+        title       = request.POST.get('title', '').strip()
+        slug        = request.POST.get('slug', '').strip()
+        content     = request.POST.get('content', '').strip()
         category_id = request.POST.get('category')
-        tag_ids  = request.POST.getlist('tag')
-        img      = request.FILES.get('featured_img')
+        tag_ids     = request.POST.getlist('tag')
+        img         = request.FILES.get('featured_img')
 
         if not title or not slug or not content:
             messages.error(request, 'Title, slug and content are required.')
@@ -148,7 +148,6 @@ class EditPost(View):
 
     def get_post(self, slug, user):
         post = get_object_or_404(Post, slug=slug)
-        # only author or staff can edit
         if post.author != user and not user.is_staff:
             return None
         return post
@@ -172,7 +171,7 @@ class EditPost(View):
         post.slug    = request.POST.get('slug', post.slug).strip()
         post.content = request.POST.get('content', post.content).strip()
 
-        category_id = request.POST.get('category')
+        category_id  = request.POST.get('category')
         post.category = get_object_or_404(Category, id=category_id) if category_id else None
 
         tag_ids = request.POST.getlist('tag')
@@ -237,8 +236,9 @@ class DeleteComment(View):
             comment.delete()
             return redirect('post_detail', slug=post_slug)
         return redirect('posts')
-    
 
+
+# ── LIKE POST ────────────────────────────────────────────────────
 @method_decorator(login_required, name='dispatch')
 class LikePost(View):
 
@@ -247,10 +247,8 @@ class LikePost(View):
         like, created = Like.objects.get_or_create(post=post, user=request.user)
 
         if not created:
-            like.delete()   # already liked → unlike
+            like.delete()  # already liked → unlike
 
-        # return JSON so the button updates instantly without page reload
-        from django.http import JsonResponse
         return JsonResponse({
             'liked': created,
             'count': post.likes.count(),
