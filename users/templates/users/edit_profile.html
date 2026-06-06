@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Profile — PohanTech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+
+  {% include "blog/header.html" %}
+
+  {% if messages %}
+  <div class="messages-container">
+    {% for message in messages %}
+    <div class="message message-{{ message.tags }}">
+      {{ message }}
+      <button class="message-close" onclick="this.parentElement.remove()">×</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main class="site-main">
+    <section class="form-page">
+      <div class="container container--narrow">
+
+        <div class="form-page__header">
+          <h1 class="form-page__title">Edit Profile</h1>
+          <p class="form-page__sub">Update your personal information.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="post-form" novalidate>
+          {% csrf_token %}
+
+          <!-- CURRENT AVATAR -->
+          <div class="form-group" style="text-align:center; margin-bottom:2rem;">
+            {% if profile.image %}
+              <img
+                src="{{ profile.image.url }}"
+                alt="Current avatar"
+                style="width:90px; height:90px; border-radius:50%; object-fit:cover; border:3px solid var(--gold); margin-bottom:.75rem;"
+              />
+            {% else %}
+              <div style="width:90px; height:90px; border-radius:50%; background:var(--ink); color:var(--paper); display:flex; align-items:center; justify-content:center; font-size:2rem; font-family:var(--font-serif); margin:0 auto .75rem;">
+                {{ user.username|first|upper }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- PROFILE IMAGE -->
+          <div class="form-group">
+            <label for="id_image" class="form-label">Profile Photo</label>
+            <input type="file" name="image" id="id_image" accept="image/*" class="form-control form-control--file" />
+          </div>
+
+          <!-- NAME ROW -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="id_first_name" class="form-label">First Name</label>
+              <input
+                type="text"
+                name="first_name"
+                id="id_first_name"
+                value="{{ user.first_name }}"
+                class="form-control"
+                placeholder="First name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="id_last_name" class="form-label">Last Name</label>
+              <input
+                type="text"
+                name="last_name"
+                id="id_last_name"
+                value="{{ user.last_name }}"
+                class="form-control"
+                placeholder="Last name"
+              />
+            </div>
+          </div>
+
+          <!-- EMAIL -->
+          <div class="form-group">
+            <label for="id_email" class="form-label">Email</label>
+            <input
+              type="email"
+              name="email"
+              id="id_email"
+              value="{{ user.email }}"
+              class="form-control"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <!-- BIO -->
+          <div class="form-group">
+            <label for="id_bio" class="form-label">Bio</label>
+            <textarea
+              name="bio"
+              id="id_bio"
+              rows="4"
+              class="form-control"
+              placeholder="Tell readers a bit about yourself…"
+            >{{ profile.bio }}</textarea>
+          </div>
+
+          <!-- SOCIAL LINKS -->
+          <div class="form-group">
+            <label for="id_website" class="form-label">Website</label>
+            <input
+              type="url"
+              name="website"
+              id="id_website"
+              value="{{ profile.website }}"
+              class="form-control"
+              placeholder="https://yoursite.com"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="id_github" class="form-label">GitHub</label>
+              <input
+                type="url"
+                name="github"
+                id="id_github"
+                value="{{ profile.github }}"
+                class="form-control"
+                placeholder="https://github.com/you"
+              />
+            </div>
+            <div class="form-group">
+              <label for="id_linkedin" class="form-label">LinkedIn</label>
+              <input
+                type="url"
+                name="linkedin"
+                id="id_linkedin"
+                value="{{ profile.linkedin }}"
+                class="form-control"
+                placeholder="https://linkedin.com/in/you"
+              />
+            </div>
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="form-actions">
+            <a href="{% url 'profile' user.username %}" class="btn btn--ghost">Cancel</a>
+            <button type="submit" class="btn btn--primary btn--large">Save Changes</button>
+          </div>
+
+        </form>
+      </div>
+    </section>
+  </main>
+
+  {% include "blog/footer.html" %}
+
+</body>
+</html>

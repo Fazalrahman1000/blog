@@ -1,10 +1,295 @@
-/* ============================================================
-   THE INKWELL — Design System
-   Aesthetic: Editorial / Literary Magazine
-   Fonts: Playfair Display (headings) + DM Sans (body)
-   ============================================================ */
 
-/* ── CSS VARIABLES ──────────────────────────────────────────── */
+/* ── PASTE THIS AT THE BOTTOM OF style.css ──────────────────────
+
+
+/* ── NAV PROFILE DROPDOWN ───────────────────────────────────── */
+.nav-profile {
+  position: relative;
+}
+
+.nav-profile__btn {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: .25rem .5rem;
+  border-radius: var(--radius);
+  transition: background var(--transition);
+  font-family: var(--font-sans);
+  font-size: .875rem;
+  color: var(--ink-muted);
+}
+
+.nav-profile__btn:hover {
+  background: var(--paper-warm);
+  color: var(--ink);
+}
+
+.nav-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--gold);
+  flex-shrink: 0;
+}
+
+.nav-avatar--initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: .9rem;
+}
+
+.nav-profile__name {
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--ink);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-profile__caret {
+  font-size: .65rem;
+  color: var(--ink-muted);
+  transition: transform var(--transition);
+}
+
+.nav-profile__btn[aria-expanded="true"] .nav-profile__caret {
+  transform: rotate(180deg);
+}
+
+/* Dropdown panel */
+.nav-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + .75rem);
+  right: 0;
+  width: 220px;
+  background: white;
+  border: 1px solid var(--paper-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+  overflow: hidden;
+}
+
+.nav-dropdown.open {
+  display: block;
+  animation: dropIn .2s ease;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.nav-dropdown__header {
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid var(--paper-border);
+  background: var(--paper-warm);
+}
+
+.nav-dropdown__username {
+  display: block;
+  font-weight: 600;
+  font-size: .875rem;
+  color: var(--ink);
+}
+
+.nav-dropdown__email {
+  display: block;
+  font-size: .75rem;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  margin-top: .15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-dropdown__links {
+  padding: .5rem 0;
+}
+
+.nav-dropdown__link {
+  display: block;
+  padding: .55rem 1.1rem;
+  font-size: .875rem;
+  color: var(--ink-light);
+  transition: background var(--transition), color var(--transition);
+}
+
+.nav-dropdown__link:hover {
+  background: var(--paper-warm);
+  color: var(--ink);
+}
+
+.nav-dropdown__footer {
+  border-top: 1px solid var(--paper-border);
+  padding: .5rem 0;
+}
+
+.nav-dropdown__logout {
+  width: 100%;
+  text-align: left;
+  padding: .55rem 1.1rem;
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: .875rem;
+  color: var(--rust);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.nav-dropdown__logout:hover {
+  background: var(--rust-light);
+}
+
+
+/* ── PROFILE PAGE ───────────────────────────────────────────── */
+.profile-header {
+  background: var(--paper-warm);
+  border-bottom: 1px solid var(--paper-border);
+  padding: 3.5rem 2rem;
+}
+
+.profile-header__inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.profile-avatar-wrap {
+  flex-shrink: 0;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--gold);
+}
+
+.profile-avatar--initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 3rem;
+}
+
+.profile-header__info {
+  flex: 1;
+}
+
+.profile-header__name {
+  font-size: 2rem;
+  font-weight: 900;
+  margin-bottom: .2rem;
+}
+
+.profile-header__username {
+  font-family: var(--font-mono);
+  font-size: .85rem;
+  color: var(--ink-muted);
+  margin-bottom: 1rem;
+}
+
+.profile-header__bio {
+  font-size: .95rem;
+  color: var(--ink-light);
+  line-height: 1.7;
+  max-width: 500px;
+  margin-bottom: 1rem;
+}
+
+.profile-header__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-bottom: 1.25rem;
+}
+
+.profile-link {
+  font-size: .82rem;
+  font-family: var(--font-mono);
+  color: var(--ink-muted);
+  padding: .3rem .75rem;
+  border: 1px solid var(--paper-border);
+  border-radius: 100px;
+  transition: all var(--transition);
+}
+
+.profile-link:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.profile-stats {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: .5rem;
+}
+
+.profile-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-stat__number {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.profile-stat__label {
+  font-size: .75rem;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  margin-bottom: 2rem;
+  padding-bottom: .75rem;
+  border-bottom: 2px solid var(--ink);
+  display: inline-block;
+}
+
+@media (max-width: 600px) {
+  .profile-header__inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-header__links {
+    justify-content: center;
+  }
+
+  .profile-stats {
+    justify-content: center;
+  }
+}
 :root {
   --ink: #1a1614;
   --ink-light: #3d3532;

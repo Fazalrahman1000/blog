@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ profile_user.username }} — PohanTech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+
+  {% include "blog/header.html" %}
+
+  {% if messages %}
+  <div class="messages-container">
+    {% for message in messages %}
+    <div class="message message-{{ message.tags }}">
+      {{ message }}
+      <button class="message-close" onclick="this.parentElement.remove()">×</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main class="site-main">
+
+    <!-- PROFILE HEADER -->
+    <section class="profile-header">
+      <div class="container">
+        <div class="profile-header__inner">
+
+          <!-- Avatar -->
+          <div class="profile-avatar-wrap">
+            {% if profile.image %}
+              <img
+                src="{{ profile.image.url }}"
+                alt="{{ profile_user.username }}"
+                class="profile-avatar"
+                width="120"
+                height="120"
+              />
+            {% else %}
+              <div class="profile-avatar profile-avatar--initial">
+                {{ profile_user.username|first|upper }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Info -->
+          <div class="profile-header__info">
+            <h1 class="profile-header__name">
+              {{ profile_user.get_full_name|default:profile_user.username }}
+            </h1>
+            <p class="profile-header__username">@{{ profile_user.username }}</p>
+
+            {% if profile.bio %}
+              <p class="profile-header__bio">{{ profile.bio }}</p>
+            {% endif %}
+
+            <!-- Social links -->
+            <div class="profile-header__links">
+              {% if profile.website %}
+                <a href="{{ profile.website }}" target="_blank" class="profile-link">
+                  🌐 Website
+                </a>
+              {% endif %}
+              {% if profile.github %}
+                <a href="{{ profile.github }}" target="_blank" class="profile-link">
+                  💻 GitHub
+                </a>
+              {% endif %}
+              {% if profile.linkedin %}
+                <a href="{{ profile.linkedin }}" target="_blank" class="profile-link">
+                  💼 LinkedIn
+                </a>
+              {% endif %}
+            </div>
+
+            <!-- Stats -->
+            <div class="profile-stats">
+              <div class="profile-stat">
+                <span class="profile-stat__number">{{ posts.count }}</span>
+                <span class="profile-stat__label">Post{{ posts.count|pluralize }}</span>
+              </div>
+            </div>
+
+            {% if is_own_profile %}
+              <a href="{% url 'edit_profile' %}" class="btn btn--outline" style="margin-top:1rem;">
+                Edit Profile
+              </a>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- USER'S POSTS -->
+    <section class="posts-section">
+      <div class="container">
+        <h2 class="section-title">Posts by {{ profile_user.get_full_name|default:profile_user.username }}</h2>
+
+        {% if posts %}
+        <div class="post-grid post-grid--full">
+          {% for post in posts %}
+          <article class="post-card post-card--grid">
+
+            <a href="{% url 'post_detail' post.slug %}" class="post-card__image-link {% if not post.featured_img %}post-card__image-placeholder{% endif %}">
+              {% if post.featured_img %}
+                <img src="{{ post.featured_img.url }}" alt="{{ post.title }}" class="post-card__image" width="400" height="225" />
+              {% else %}
+                <span class="placeholder-icon">✦</span>
+              {% endif %}
+            </a>
+
+            <div class="post-card__body">
+              {% if post.category %}
+                <span class="post-meta__category">{{ post.category.name }}</span>
+              {% endif %}
+
+              <h2 class="post-card__title">
+                <a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
+              </h2>
+
+              <p class="post-card__excerpt">{{ post.content|truncatewords:20 }}</p>
+
+              <div class="post-card__footer">
+                <time class="author-chip__date" datetime="{{ post.created_at|date:'Y-m-d' }}">
+                  {{ post.created_at|date:"M j, Y" }}
+                </time>
+                <div class="post-card__stats">
+                  <span class="post-stat"><span class="post-stat__icon">♥</span> {{ post.likes.count }}</span>
+                  <span class="post-stat"><span class="post-stat__icon">💬</span> {{ post.comment_set.count }}</span>
+                </div>
+              </div>
+            </div>
+
+          </article>
+          {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+          <span class="empty-icon">✦</span>
+          <h3>No posts yet.</h3>
+          {% if is_own_profile %}
+            <p>You haven't written anything yet.</p>
+            <a href="{% url 'create_post' %}" class="btn btn--primary">Write your first post</a>
+          {% else %}
+            <p>{{ profile_user.username }} hasn't written anything yet.</p>
+          {% endif %}
+        </div>
+        {% endif %}
+
+      </div>
+    </section>
+
+  </main>
+
+  {% include "blog/footer.html" %}
+
+</body>
+</html>

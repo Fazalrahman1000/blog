@@ -9,8 +9,9 @@ class Profile(models.Model):
     )
 
     image = models.ImageField(
-        upload_to='profiles/',
-        default='default.jpg'
+    upload_to='profiles/',
+    null=True,
+    blank=True,
     )
 
     bio = models.TextField(
