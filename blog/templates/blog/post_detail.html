@@ -1,99 +1,107 @@
-<!doctype html>
+<!DOCTYPE html>
 {% load static %}
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ post.title }} — PohanTech</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-  </head>
-  <body>
-    {% include "blog/header.html" %} {% if messages %}
-    <div class="messages-container">
-      {% for message in messages %}
-      <div class="message message-{{ message.tags }}">
-        {{ message }}
-        <button class="message-close" onclick="this.parentElement.remove()">
-          ×
-        </button>
-      </div>
-      {% endfor %}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ post.title }} — PohanTech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+
+  {% include "blog/header.html" %}
+
+  {% if messages %}
+  <div class="messages-container">
+    {% for message in messages %}
+    <div class="message message-{{ message.tags }}">
+      {{ message }}
+      <button class="message-close" onclick="this.parentElement.remove()">×</button>
     </div>
-    {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
 
-    <main class="site-main">
-      <article class="single-post">
-        <!-- POST HEADER -->
-        <header class="post-header">
-          <div class="post-header__inner">
-            {% if post.category %}
-            <span class="post-meta__category">{{ post.category.name }}</span>
-            {% endif %}
+  <main class="site-main">
+  <article class="single-post">
 
-            <h1 class="post-header__title">{{ post.title }}</h1>
+    <!-- ══ TOP HERO: IMAGE LEFT + INFO RIGHT ════════════════════ -->
+    <section class="post-hero-split">
+      <div class="post-hero-split__inner">
 
-            <div class="post-header__meta">
-              <div class="author-chip">
-                <div class="author-chip__avatar">
-                  {{ post.author.username|first|upper }}
-                </div>
-                <div class="author-chip__info">
-                  <span class="author-chip__name">{{ post.author.get_full_name|default:post.author.username }}
-
-                  </span>
-                  <time
-                    class="author-chip__date"
-                    datetime="{{ post.created_at|date:'Y-m-d' }}"
-                  >
-                    {{ post.created_at|date:"F j, Y" }}
-                  </time>
-                </div>
-              </div>
-            </div>
-
-            {% if show_updated %}
-            <p class="post-header__updated">
-              Last updated on {{ post.updated_at|date:"F j, Y" }}
-            </p>
-            {% endif %}
-          </div>
-        </header>
-
-        <!-- FEATURED IMAGE -->
-        {% if post.featured_img %}
-        <div class="post-hero-image">
+        <!-- LEFT: Image -->
+        <div class="post-hero-split__image-wrap">
+          {% if post.featured_img %}
           <img
             src="{{ post.featured_img.url }}"
             alt="{{ post.title }}"
-            width="1200"
-            height="600"
+            class="post-hero-split__image"
           />
+          {% else %}
+          <div class="post-hero-split__placeholder">
+            <span class="placeholder-icon">✦</span>
+          </div>
+          {% endif %}
         </div>
-        {% endif %}
 
-        <!-- POST BODY -->
-        <div class="post-body">
-          <div class="post-content">{{ post.content|linebreaks }}</div>
+        <!-- RIGHT: Post info -->
+        <div class="post-hero-split__info">
+
+          {% if post.category %}
+          <span class="post-meta__category">{{ post.category.name }}</span>
+          {% endif %}
+
+          <h1 class="post-hero-split__title">{{ post.title }}</h1>
+
+          {% if show_updated %}
+          <p class="post-hero-split__updated">
+            Updated {{ post.updated_at|date:"F j, Y" }}
+          </p>
+          {% endif %}
+
+          <div class="post-hero-split__meta-row">
+            <time class="post-hero-split__date" datetime="{{ post.created_at|date:'Y-m-d' }}">
+              {{ post.created_at|date:"F j, Y" }}
+            </time>
+          </div>
+
+          <!-- Author as clickable profile link -->
+          <a href="{% url 'profile' post.author.username %}" class="post-author-chip">
+            <div class="post-author-chip__avatar">{{ post.author.username|first|upper }}</div>
+            <div class="post-author-chip__info">
+              <span class="post-author-chip__name">{{ post.author.get_full_name|default:post.author.username }}</span>
+              <span class="post-author-chip__label">Author</span>
+            </div>
+          </a>
+
+          <!-- Stats row -->
+          <div class="post-hero-split__stats">
+            <span class="post-hero-stat">
+              <span class="post-hero-stat__icon">♥</span>
+              <span class="post-hero-stat__num">{{ like_count }}</span>
+              <span class="post-hero-stat__label">Like{{ like_count|pluralize }}</span>
+            </span>
+            <span class="post-hero-stat">
+              <span class="post-hero-stat__icon">💬</span>
+              <span class="post-hero-stat__num">{{ post.comment_set.count }}</span>
+              <span class="post-hero-stat__label">Comment{{ post.comment_set.count|pluralize }}</span>
+            </span>
+          </div>
 
           <!-- Tags -->
           {% if post.tag.all %}
-          <div class="post-tags">
+          <div class="post-hero-split__tags">
             {% for tag in post.tag.all %}
-            <a href="{% url 'tag_posts' tag.slug %}" class="tag-pill"
-              >#{{ tag.tagName }}</a
-            >
+            <a href="{% url 'tag_posts' tag.slug %}" class="tag-pill">#{{ tag.tagName }}</a>
             {% endfor %}
           </div>
           {% endif %}
 
           <!-- Like button -->
-          <div class="like-section">
+          <div class="post-hero-split__actions">
             {% if user.is_authenticated %}
             <button
               class="like-btn {% if user_liked %}liked{% endif %}"
@@ -102,9 +110,7 @@
             >
               <span class="like-icon">♥</span>
               <span class="like-count">{{ like_count }}</span>
-              <span class="like-label"
-                >{% if user_liked %}Liked{% else %}Like{% endif %}</span
-              >
+              <span class="like-label">{% if user_liked %}Liked{% else %}Like{% endif %}</span>
             </button>
             {% else %}
             <span class="like-display">
@@ -112,132 +118,118 @@
               {{ like_count }} Like{{ like_count|pluralize }}
             </span>
             {% endif %}
-          </div>
 
-          <!-- Edit / Delete -->
-          {% if user == post.author or user.is_staff %}
-          <div class="post-actions">
-            <a href="{% url 'edit_post' post.slug %}" class="btn btn--outline"
-              >Edit Post</a
-            >
-            <a href="{% url 'delete_post' post.slug %}" class="btn btn--danger"
-              >Delete</a
-            >
-          </div>
-          {% endif %}
-        </div>
-
-        <!-- DIVIDER -->
-        <div class="section-divider">✦</div>
-
-        <!-- COMMENTS -->
-        <section class="comments-section" id="comments">
-          <div class="comments-inner">
-            <h2 class="comments-title">{{ post.comment_set.count }} Comment{{ post.comment_set.count|pluralize }}</h2>
-
-            {% if post.comment_set.all %}
-            <div class="comment-list">
-              {% for comment in post.comment_set.all %}
-              <div class="comment" id="comment-{{ comment.id }}">
-                <div class="comment__header">
-                  <div class="author-chip author-chip--sm">
-                    <div class="author-chip__avatar">
-                      {{ comment.user.username|first|upper }}
-                    </div>
-                    <div class="author-chip__info">
-                      <span class="author-chip__name">{{ comment.user.get_full_name|default:comment.user.username }}</span>
-                      <time
-                        class="author-chip__date"
-                        datetime="{{ comment.created_at|date:'Y-m-d' }}"
-                      >
-                       {{ comment.created_at|date:"M j, Y" }} · {{ comment.created_at|date:"g:i A" }}
-
-                      </time>
-                    </div>
-                  </div>
-                  {% if user == comment.user or user.is_staff %}
-                  <a
-                    href="{% url 'delete_comment' comment.id %}"
-                    class="comment__delete"
-                    title="Delete comment"
-                    onclick="return confirm('Delete this comment?');"
-                    >✕</a
-                  >
-                  {% endif %}
-                </div>
-
-                <div class="comment__body">
-                  {{ comment.content|linebreaks }}
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-            {% else %}
-            <p class="no-comments">
-              No comments yet. Be the first to share your thoughts.
-            </p>
-            {% endif %} {% if user.is_authenticated %}
-            <div class="comment-form-wrapper">
-              <h3 class="comment-form__title">Leave a Comment</h3>
-              <form
-                method="post"
-                action="{% url 'add_comment' post.slug %}"
-                class="comment-form"
-              >
-                {% csrf_token %}
-                <textarea
-                  name="content"
-                  rows="5"
-                  class="form-control"
-                  placeholder="Share your thoughts…"
-                  required
-                ></textarea>
-                <div class="comment-form__footer">
-                  <span class="comment-form__user"
-                    >Posting as <strong>{{ user.username }}</strong></span
-                  >
-                  <button type="submit" class="btn btn--primary">
-                    Post Comment
-                  </button>
-                </div>
-              </form>
-            </div>
-            {% else %}
-            <div class="comment-login-prompt">
-              <p>Want to join the conversation?</p>
-              <a
-                href="{% url 'login' %}?next={{ request.path }}"
-                class="btn btn--outline"
-                >Sign in to comment</a
-              >
-            </div>
+            <!-- Edit/Delete -->
+            {% if user == post.author or user.is_staff %}
+            <a href="{% url 'edit_post' post.slug %}" class="btn btn--outline btn--sm">Edit</a>
+            <a href="{% url 'delete_post' post.slug %}" class="btn btn--danger btn--sm">Delete</a>
             {% endif %}
           </div>
-        </section>
-      </article>
-    </main>
 
-    {% include "blog/footer.html" %}
+        </div>
+      </div>
+    </section>
 
-    <script src="{% static 'js/main.js' %}"></script>
-    <script>
-      document.querySelectorAll(".like-btn").forEach(function (btn) {
-        btn.addEventListener("click", async function () {
-          const res = await fetch(btn.dataset.url, {
-            method: "POST",
-            headers: {
-              "X-CSRFToken": btn.dataset.csrf,
-              "Content-Type": "application/json",
-            },
-          });
-          const data = await res.json();
-          btn.querySelector(".like-count").textContent = data.count;
-          btn.querySelector(".like-label").textContent = data.liked
-            ? "Liked"
-            : "Like";
-          btn.classList.toggle("liked", data.liked);
+    <!-- ══ POST CONTENT (full width) ════════════════════════════ -->
+    <section class="post-content-section">
+      <div class="post-content-inner">
+        <div class="post-content">
+          {{ post.content|linebreaks }}
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ DIVIDER ═══════════════════════════════════════════════ -->
+    <div class="section-divider">✦</div>
+
+    <!-- ══ COMMENTS ═════════════════════════════════════════════ -->
+    <section class="comments-section" id="comments">
+      <div class="comments-inner">
+
+        <h2 class="comments-title">{{ post.comment_set.count }} Comment{{ post.comment_set.count|pluralize }}</h2>
+
+        {% if post.comment_set.all %}
+        <div class="comment-list">
+          {% for comment in post.comment_set.all %}
+          <div class="comment" id="comment-{{ comment.id }}">
+            <div class="comment__header">
+              <div class="author-chip author-chip--sm">
+                <div class="author-chip__avatar">{{ comment.user.username|first|upper }}</div>
+                <div class="author-chip__info">
+                  <span class="author-chip__name">{{ comment.user.get_full_name|default:comment.user.username }}</span>
+                  <time class="author-chip__date" datetime="{{ comment.created_at|date:'Y-m-d' }}">
+                    {{ comment.created_at|date:"M j, Y" }} · {{ comment.created_at|date:"g:i A" }}
+                  </time>
+                </div>
+              </div>
+              {% if user == comment.user or user.is_staff %}
+              <a href="{% url 'delete_comment' comment.id %}"
+                 class="comment__delete"
+                 title="Delete comment"
+                 onclick="return confirm('Delete this comment?');">✕</a>
+              {% endif %}
+            </div>
+            <div class="comment__body">
+              {{ comment.content|linebreaks }}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-comments">No comments yet. Be the first to share your thoughts.</p>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        <div class="comment-form-wrapper">
+          <h3 class="comment-form__title">Leave a Comment</h3>
+          <form method="post" action="{% url 'add_comment' post.slug %}" class="comment-form">
+            {% csrf_token %}
+            <textarea
+              name="content"
+              rows="5"
+              class="form-control"
+              placeholder="Share your thoughts…"
+              required
+            ></textarea>
+            <div class="comment-form__footer">
+              <span class="comment-form__user">Posting as <strong>{{ user.username }}</strong></span>
+              <button type="submit" class="btn btn--primary">Post Comment</button>
+            </div>
+          </form>
+        </div>
+        {% else %}
+        <div class="comment-login-prompt">
+          <p>Want to join the conversation?</p>
+          <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn--outline">Sign in to comment</a>
+        </div>
+        {% endif %}
+
+      </div>
+    </section>
+
+  </article>
+  </main>
+
+  {% include "blog/footer.html" %}
+
+  <script src="{% static 'js/main.js' %}"></script>
+  <script>
+    document.querySelectorAll('.like-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        const res = await fetch(btn.dataset.url, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': btn.dataset.csrf,
+            'Content-Type': 'application/json',
+          },
         });
+        const data = await res.json();
+        btn.querySelector('.like-count').textContent = data.count;
+        btn.querySelector('.like-label').textContent = data.liked ? 'Liked' : 'Like';
+        btn.classList.toggle('liked', data.liked);
       });
-    </script>
-  </body>
+    });
+  </script>
+
+</body>
 </html>
