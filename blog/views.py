@@ -14,7 +14,6 @@ def base_context():
     }
 
 
-# ── POSTS LIST ───────────────────────────────────────────────────
 class PostsList(ListView):
     model = Post
     template_name = 'blog/posts.html'
@@ -32,7 +31,6 @@ class PostsList(ListView):
         return context
 
 
-# ── CATEGORY FILTER ──────────────────────────────────────────────
 class CategoryPosts(ListView):
     model = Post
     template_name = 'blog/posts.html'
@@ -53,7 +51,6 @@ class CategoryPosts(ListView):
         return context
 
 
-# ── TAG FILTER ───────────────────────────────────────────────────
 class TagPosts(ListView):
     model = Post
     template_name = 'blog/posts.html'
@@ -74,7 +71,6 @@ class TagPosts(ListView):
         return context
 
 
-# ── POST DETAIL ──────────────────────────────────────────────────
 class PostDetail(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
@@ -82,11 +78,16 @@ class PostDetail(DetailView):
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
 
+    def get_object(self):
+        obj = super().get_object()
+        # increment view count every time the page is loaded
+        Post.objects.filter(pk=obj.pk).update(views=obj.views + 1)
+        obj.views += 1  # update the in-memory object too so template sees it
+        return obj
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(base_context())
-
-        # Like info
         if self.request.user.is_authenticated:
             context['user_liked'] = self.object.likes.filter(
                 user=self.request.user
@@ -94,8 +95,6 @@ class PostDetail(DetailView):
         else:
             context['user_liked'] = False
         context['like_count'] = self.object.likes.count()
-
-        # Show "Last updated" only if the post was edited on a different day
         context['show_updated'] = (
             self.object.updated_at.strftime('%Y-%m-%d') !=
             self.object.created_at.strftime('%Y-%m-%d')

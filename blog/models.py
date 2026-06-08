@@ -50,6 +50,8 @@ class Post(models.Model):
 
     featured_img = models.ImageField(upload_to='posts', null=True, blank=True)
 
+    views = models.PositiveIntegerField(default=0)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     updated_at = models.DateTimeField(auto_now=True)

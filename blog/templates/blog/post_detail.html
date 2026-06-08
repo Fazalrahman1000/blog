@@ -80,6 +80,11 @@
           <!-- Stats row -->
           <div class="post-hero-split__stats">
             <span class="post-hero-stat">
+              <span class="post-hero-stat__icon">👁</span>
+              <span class="post-hero-stat__num">{{ post.views }}</span>
+              <span class="post-hero-stat__label">View{{ post.views|pluralize }}</span>
+            </span>
+            <span class="post-hero-stat">
               <span class="post-hero-stat__icon">♥</span>
               <span class="post-hero-stat__num">{{ like_count }}</span>
               <span class="post-hero-stat__label">Like{{ like_count|pluralize }}</span>
