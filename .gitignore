@@ -2,6 +2,7 @@
 blog_env/
 venv/
 .venv/
+render_venv/
 
 # Python
 __pycache__/
