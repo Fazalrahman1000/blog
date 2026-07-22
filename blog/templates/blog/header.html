@@ -26,7 +26,9 @@
       {% endfor %}
 
       {% if user.is_authenticated %}
-        <a href="{% url 'create_post' %}" class="nav-cta">Write</a>
+        {% if user.is_staff %}
+          <a href="{% url 'create_post' %}" class="nav-cta">Write</a>
+        {% endif %}
 
         <!-- PROFILE DROPDOWN -->
         <div class="nav-profile" id="navProfile">

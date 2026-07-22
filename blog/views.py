@@ -107,9 +107,17 @@ class PostDetail(DetailView):
 class CreatePost(View):
 
     def get(self, request):
+        # only staff/admin can create posts
+        if not request.user.is_staff:
+            messages.error(request, 'You do not have permission to create posts.')
+            return redirect('posts')
         return render(request, 'blog/create_post.html', base_context())
 
     def post(self, request):
+        if not request.user.is_staff:
+            messages.error(request, 'You do not have permission to create posts.')
+            return redirect('posts')
+
         title       = request.POST.get('title', '').strip()
         slug        = request.POST.get('slug', '').strip()
         content     = request.POST.get('content', '').strip()
@@ -140,14 +148,13 @@ class CreatePost(View):
         messages.success(request, 'Post published!')
         return redirect('post_detail', slug=post.slug)
 
-
 # ── EDIT POST ────────────────────────────────────────────────────
 @method_decorator(login_required, name='dispatch')
 class EditPost(View):
 
     def get_post(self, slug, user):
         post = get_object_or_404(Post, slug=slug)
-        if post.author != user and not user.is_staff:
+        if not user.is_staff:           # ← only staff can edit/delete
             return None
         return post
 
@@ -190,7 +197,7 @@ class DeletePost(View):
 
     def get_post(self, slug, user):
         post = get_object_or_404(Post, slug=slug)
-        if post.author != user and not user.is_staff:
+        if not user.is_staff:           # ← only staff can edit/delete
             return None
         return post
 
