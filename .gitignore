@@ -17,6 +17,7 @@ media/
 
 # Environment variables
 .env
+.blog_env
 
 # VS Code
 .vscode/
